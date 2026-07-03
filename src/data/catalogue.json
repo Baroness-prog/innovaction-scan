@@ -1,0 +1,256 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "note": "Référentiel propriétaire AR FOR PULSE. 4 secteurs × 7 axes socle. Chaque axe : poids_ref (pondération sectorielle) + indicateurs contextualisés (3 minimum). Les identifiants d'axe sont invariants (voir socle.js).",
+    "echelle": "1 (très faible) → 5 (excellent)"
+  },
+  "secteurs": {
+    "btp": {
+      "nom": "BTP & construction",
+      "axes": {
+        "humain": {
+          "poids_ref": 1.35,
+          "indicateurs": [
+            { "id": "btp-hum-1", "libelle": "Fidélisation des compagnons et chefs de chantier clés" },
+            { "id": "btp-hum-2", "libelle": "Transmission des savoir-faire métier (compagnonnage, tutorat)" },
+            { "id": "btp-hum-3", "libelle": "Polyvalence et montée en compétence des équipes" },
+            { "id": "btp-hum-4", "libelle": "Culture sécurité et prévention des risques chantier" }
+          ]
+        },
+        "organisation": {
+          "poids_ref": 1.25,
+          "indicateurs": [
+            { "id": "btp-org-1", "libelle": "Maîtrise de la planification et des délais de chantier" },
+            { "id": "btp-org-2", "libelle": "Suivi de la rentabilité par affaire / par chantier" },
+            { "id": "btp-org-3", "libelle": "Qualité et certifications (Qualibat, RGE, ISO)" }
+          ]
+        },
+        "client": {
+          "poids_ref": 1.15,
+          "indicateurs": [
+            { "id": "btp-cli-1", "libelle": "Récurrence des donneurs d'ordre et marchés cadres" },
+            { "id": "btp-cli-2", "libelle": "Carnet de commandes et visibilité pluri-annuelle" },
+            { "id": "btp-cli-3", "libelle": "Recommandation et bouche-à-oreille local" }
+          ]
+        },
+        "savoir": {
+          "poids_ref": 0.95,
+          "indicateurs": [
+            { "id": "btp-sav-1", "libelle": "Maîtrise de techniques ou matériaux différenciants" },
+            { "id": "btp-sav-2", "libelle": "Capacité à répondre aux exigences environnementales (RE2020)" },
+            { "id": "btp-sav-3", "libelle": "Retours d'expérience capitalisés d'un chantier à l'autre" }
+          ]
+        },
+        "partenaires": {
+          "poids_ref": 1.15,
+          "indicateurs": [
+            { "id": "btp-par-1", "libelle": "Réseau de sous-traitants fiables et fidèles" },
+            { "id": "btp-par-2", "libelle": "Relations fournisseurs et sécurisation des approvisionnements" },
+            { "id": "btp-par-3", "libelle": "Groupements et cotraitance pour accéder à de plus gros marchés" }
+          ]
+        },
+        "marque": {
+          "poids_ref": 1.0,
+          "indicateurs": [
+            { "id": "btp-mar-1", "libelle": "Réputation de qualité et de respect des engagements" },
+            { "id": "btp-mar-2", "libelle": "Notoriété locale et présence sur le territoire" },
+            { "id": "btp-mar-3", "libelle": "Références de chantiers emblématiques valorisables" }
+          ]
+        },
+        "numerique": {
+          "poids_ref": 0.85,
+          "indicateurs": [
+            { "id": "btp-num-1", "libelle": "Outils de suivi de chantier et de mobilité (tablettes terrain)" },
+            { "id": "btp-num-2", "libelle": "Modélisation / BIM et dématérialisation des dossiers" },
+            { "id": "btp-num-3", "libelle": "Données de coûts et de productivité exploitables" }
+          ]
+        }
+      }
+    },
+    "industrie": {
+      "nom": "Industrie & production",
+      "axes": {
+        "humain": {
+          "poids_ref": 1.2,
+          "indicateurs": [
+            { "id": "ind-hum-1", "libelle": "Savoir-faire technique rare et difficilement remplaçable" },
+            { "id": "ind-hum-2", "libelle": "Plan de formation et gestion des compétences critiques" },
+            { "id": "ind-hum-3", "libelle": "Fidélisation des opérateurs et techniciens qualifiés" }
+          ]
+        },
+        "organisation": {
+          "poids_ref": 1.35,
+          "indicateurs": [
+            { "id": "ind-org-1", "libelle": "Maîtrise et documentation des procédés de production" },
+            { "id": "ind-org-2", "libelle": "Démarche qualité / lean et taux de rebut maîtrisé" },
+            { "id": "ind-org-3", "libelle": "Certifications produits et système (ISO 9001, secteur)" },
+            { "id": "ind-org-4", "libelle": "Traçabilité et pilotage de la performance industrielle" }
+          ]
+        },
+        "client": {
+          "poids_ref": 1.15,
+          "indicateurs": [
+            { "id": "ind-cli-1", "libelle": "Contrats-cadres et récurrence avec les donneurs d'ordre" },
+            { "id": "ind-cli-2", "libelle": "Diversification et dépendance au premier client" },
+            { "id": "ind-cli-3", "libelle": "Homologation / référencement chez les clients stratégiques" }
+          ]
+        },
+        "savoir": {
+          "poids_ref": 1.25,
+          "indicateurs": [
+            { "id": "ind-sav-1", "libelle": "Brevets, secrets de fabrication et propriété industrielle" },
+            { "id": "ind-sav-2", "libelle": "Capacité de R&D et d'industrialisation de nouveaux produits" },
+            { "id": "ind-sav-3", "libelle": "Outillages et méthodes propriétaires" }
+          ]
+        },
+        "partenaires": {
+          "poids_ref": 1.05,
+          "indicateurs": [
+            { "id": "ind-par-1", "libelle": "Fiabilité et diversité de la supply chain" },
+            { "id": "ind-par-2", "libelle": "Partenariats technologiques et co-développement" },
+            { "id": "ind-par-3", "libelle": "Sécurisation des matières et composants critiques" }
+          ]
+        },
+        "marque": {
+          "poids_ref": 0.95,
+          "indicateurs": [
+            { "id": "ind-mar-1", "libelle": "Réputation de fiabilité et de qualité produit" },
+            { "id": "ind-mar-2", "libelle": "Marque reconnue sur son marché de niche" },
+            { "id": "ind-mar-3", "libelle": "Positionnement made in France / origine valorisée" }
+          ]
+        },
+        "numerique": {
+          "poids_ref": 1.05,
+          "indicateurs": [
+            { "id": "ind-num-1", "libelle": "Niveau d'automatisation et d'industrie 4.0" },
+            { "id": "ind-num-2", "libelle": "ERP / MES et intégration des données de production" },
+            { "id": "ind-num-3", "libelle": "Exploitation des données pour la maintenance et la qualité" }
+          ]
+        }
+      }
+    },
+    "services": {
+      "nom": "Services",
+      "axes": {
+        "humain": {
+          "poids_ref": 1.4,
+          "indicateurs": [
+            { "id": "ser-hum-1", "libelle": "Expertise et fidélisation des collaborateurs clés" },
+            { "id": "ser-hum-2", "libelle": "Capacité à recruter et intégrer les bons profils" },
+            { "id": "ser-hum-3", "libelle": "Culture d'entreprise et engagement des équipes" },
+            { "id": "ser-hum-4", "libelle": "Dépendance de l'activité aux personnes clés (dont dirigeant)" }
+          ]
+        },
+        "organisation": {
+          "poids_ref": 1.15,
+          "indicateurs": [
+            { "id": "ser-org-1", "libelle": "Méthodes et process de délivrance formalisés" },
+            { "id": "ser-org-2", "libelle": "Standardisation de la qualité de service" },
+            { "id": "ser-org-3", "libelle": "Suivi de la rentabilité par mission / par client" }
+          ]
+        },
+        "client": {
+          "poids_ref": 1.3,
+          "indicateurs": [
+            { "id": "ser-cli-1", "libelle": "Récurrence, abonnements et contrats de longue durée" },
+            { "id": "ser-cli-2", "libelle": "Taux de rétention et satisfaction client" },
+            { "id": "ser-cli-3", "libelle": "Concentration du chiffre d'affaires sur les premiers clients" }
+          ]
+        },
+        "savoir": {
+          "poids_ref": 1.1,
+          "indicateurs": [
+            { "id": "ser-sav-1", "libelle": "Méthodologies propriétaires et capital de connaissance" },
+            { "id": "ser-sav-2", "libelle": "Capitalisation documentaire du savoir de l'entreprise" },
+            { "id": "ser-sav-3", "libelle": "Capacité à faire évoluer l'offre face au marché" }
+          ]
+        },
+        "partenaires": {
+          "poids_ref": 0.9,
+          "indicateurs": [
+            { "id": "ser-par-1", "libelle": "Réseau de prescripteurs et d'apporteurs d'affaires" },
+            { "id": "ser-par-2", "libelle": "Partenariats et sous-traitance de compétences" },
+            { "id": "ser-par-3", "libelle": "Alliances technologiques ou de distribution" }
+          ]
+        },
+        "marque": {
+          "poids_ref": 1.2,
+          "indicateurs": [
+            { "id": "ser-mar-1", "libelle": "Notoriété et réputation sur le marché cible" },
+            { "id": "ser-mar-2", "libelle": "Recommandation, avis et preuves sociales" },
+            { "id": "ser-mar-3", "libelle": "Différenciation perçue face à la concurrence" }
+          ]
+        },
+        "numerique": {
+          "poids_ref": 1.1,
+          "indicateurs": [
+            { "id": "ser-num-1", "libelle": "Outils digitaux de production et de collaboration" },
+            { "id": "ser-num-2", "libelle": "CRM et exploitation de la donnée client" },
+            { "id": "ser-num-3", "libelle": "Actifs numériques (plateforme, contenus, audience)" }
+          ]
+        }
+      }
+    },
+    "negoce": {
+      "nom": "Négoce & distribution",
+      "axes": {
+        "humain": {
+          "poids_ref": 1.1,
+          "indicateurs": [
+            { "id": "neg-hum-1", "libelle": "Compétence commerciale et fidélisation des vendeurs" },
+            { "id": "neg-hum-2", "libelle": "Connaissance produit et conseil des équipes" },
+            { "id": "neg-hum-3", "libelle": "Portefeuille relationnel porté par les commerciaux" }
+          ]
+        },
+        "organisation": {
+          "poids_ref": 1.2,
+          "indicateurs": [
+            { "id": "neg-org-1", "libelle": "Maîtrise de la logistique et des stocks" },
+            { "id": "neg-org-2", "libelle": "Pilotage des marges et de la rotation" },
+            { "id": "neg-org-3", "libelle": "Process d'achat et de référencement structurés" }
+          ]
+        },
+        "client": {
+          "poids_ref": 1.3,
+          "indicateurs": [
+            { "id": "neg-cli-1", "libelle": "Fidélité du portefeuille et récurrence des commandes" },
+            { "id": "neg-cli-2", "libelle": "Base clients qualifiée et exploitée" },
+            { "id": "neg-cli-3", "libelle": "Dépendance aux plus gros comptes" }
+          ]
+        },
+        "savoir": {
+          "poids_ref": 0.9,
+          "indicateurs": [
+            { "id": "neg-sav-1", "libelle": "Connaissance fine du marché et des tendances" },
+            { "id": "neg-sav-2", "libelle": "Expertise produit / gamme différenciante" },
+            { "id": "neg-sav-3", "libelle": "Capacité à sourcer des produits exclusifs" }
+          ]
+        },
+        "partenaires": {
+          "poids_ref": 1.35,
+          "indicateurs": [
+            { "id": "neg-par-1", "libelle": "Exclusivités et accords de distribution fournisseurs" },
+            { "id": "neg-par-2", "libelle": "Conditions d'achat et pouvoir de négociation" },
+            { "id": "neg-par-3", "libelle": "Diversité et fiabilité des sources d'approvisionnement" }
+          ]
+        },
+        "marque": {
+          "poids_ref": 1.15,
+          "indicateurs": [
+            { "id": "neg-mar-1", "libelle": "Réputation d'enseigne et confiance des clients" },
+            { "id": "neg-mar-2", "libelle": "Notoriété locale et emplacement / zone de chalandise" },
+            { "id": "neg-mar-3", "libelle": "Marques propres ou distribuées valorisantes" }
+          ]
+        },
+        "numerique": {
+          "poids_ref": 1.1,
+          "indicateurs": [
+            { "id": "neg-num-1", "libelle": "Canal e-commerce et présence en ligne" },
+            { "id": "neg-num-2", "libelle": "Système d'information stock / commandes intégré" },
+            { "id": "neg-num-3", "libelle": "Exploitation des données d'achat et de comportement client" }
+          ]
+        }
+      }
+    }
+  }
+}
