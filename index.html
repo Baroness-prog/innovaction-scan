@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>InnovAction Scan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: panneau d'instruments — bandeau de navigation collant, bande de synthèse Comex, quadrants 2×2 qui s'empilent sur téléphone. */
+:root {
+  --bg: #ECEFF2; --surface: #FFFFFF; --surface-2: #F4F6F8; --ink: #15212B; --muted: #596673; --line: #D5DCE2;
+  --accent: #1D5E6A; --accent-soft: #DCEAEC; --on-accent: #FFFFFF;
+  --ok: #2E7A4D; --warn: #A2650F; --crit: #B0372C;
+  --ok-soft: #E0EFE5; --warn-soft: #F5EAD6; --crit-soft: #F5DFDB;
+  --t-dys: #3E66A2; --t-cont: #874C8E; --t-rup: #687818;
+  --font-d: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-b: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-m: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 6px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0E151B; --surface: #16212A; --surface-2: #1B2731; --ink: #E2E8ED; --muted: #94A2AE; --line: #2A3743;
+  --accent: #62B3BF; --accent-soft: #1B3A40; --on-accent: #0E151B;
+  --ok: #5DBA82; --warn: #E0A54C; --crit: #E46C5E;
+  --ok-soft: #173326; --warn-soft: #3A2D16; --crit-soft: #3D1F1B;
+  --t-dys: #7FA4DE; --t-cont: #C48ACB; --t-rup: #AFC15A; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0E151B; --surface: #16212A; --surface-2: #1B2731; --ink: #E2E8ED; --muted: #94A2AE; --line: #2A3743;
+  --accent: #62B3BF; --accent-soft: #1B3A40; --on-accent: #0E151B;
+  --ok: #5DBA82; --warn: #E0A54C; --crit: #E46C5E;
+  --ok-soft: #173326; --warn-soft: #3A2D16; --crit-soft: #3D1F1B;
+  --t-dys: #7FA4DE; --t-cont: #C48ACB; --t-rup: #AFC15A; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.5 var(--font-b); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+h1, h2, h3 { font-family: var(--font-d); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.05rem; }
+p { margin: 0; }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num, .mono { font-family: var(--font-m); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.eyebrow { font-family: var(--font-m); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1280px; margin: 0 auto; }
+
+/* En-tête */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+header.top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand b { font-family: var(--font-d); font-size: 1.25rem; letter-spacing: -0.02em; }
+.brand b span { color: var(--accent); }
+.brand small { color: var(--muted); font-size: 12px; }
+nav.tabs { display: flex; gap: 2px; overflow-x: auto; flex: 1 1 auto; scrollbar-width: none; }
+nav.tabs a { padding: 6px 12px; border-radius: var(--r); text-decoration: none; color: var(--muted); white-space: nowrap; font-weight: 500; }
+nav.tabs a:hover { color: var(--ink); background: var(--surface-2); }
+nav.tabs a[aria-current="page"] { color: var(--ink); background: var(--accent-soft); }
+.scope { display: flex; align-items: center; gap: 8px; }
+select, input[type="text"], input[type="number"], input[type="search"], textarea {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 8px; max-width: 100%;
+}
+textarea { width: 100%; resize: vertical; line-height: 1.55; }
+.btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: var(--r); padding: 6px 12px; cursor: pointer; font-weight: 500; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.small { padding: 3px 9px; font-size: 12px; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+main { padding-block: 22px 60px; }
+.page-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 10px 24px; margin-bottom: 18px; }
+.page-head p { color: var(--muted); max-width: 70ch; }
+
+/* Bande de synthèse */
+.strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tile .big { font-family: var(--font-d); font-size: 2.1rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tile.sds { flex-direction: row; align-items: center; gap: 14px; }
+
+/* Quadrants */
+.quad { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.panel-head .idx { font-family: var(--font-m); color: var(--accent); font-size: 12px; margin-right: 6px; }
+.chart { width: 100%; height: auto; display: block; }
+.chart text { fill: var(--muted); font-family: var(--font-m); font-size: 10px; }
+.chart .lbl { fill: var(--ink); font-family: var(--font-b); font-size: 11px; font-weight: 500; }
+.chart .grid { stroke: var(--line); fill: none; }
+.chart .axis { stroke: var(--muted); }
+
+.bars { display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) 2.5rem; gap: 6px 10px; align-items: center; }
+.bars .bar { height: 10px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+.bars .bar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+.bars .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+.chip { display: inline-flex; align-items: baseline; gap: 5px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; background: var(--surface-2); white-space: nowrap; }
+.chip .d { font-family: var(--font-m); font-size: 10px; }
+.up { color: var(--crit); } .down { color: var(--ok); }
+
+.pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 999px; white-space: nowrap; letter-spacing: .01em; }
+.pill.dys { background: color-mix(in srgb, var(--t-dys) 16%, transparent); color: var(--t-dys); }
+.pill.cont { background: color-mix(in srgb, var(--t-cont) 16%, transparent); color: var(--t-cont); }
+.pill.rup { background: color-mix(in srgb, var(--t-rup) 18%, transparent); color: var(--t-rup); }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.crit { background: var(--crit-soft); color: var(--crit); }
+.pill.neutral { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.pill.sf { background: transparent; color: var(--accent); border: 1px dashed var(--accent); }
+
+.alerts { display: flex; flex-direction: column; gap: 8px; }
+.alert { display: grid; grid-template-columns: 4px minmax(0, 1fr) auto; gap: 10px; align-items: start; background: var(--surface-2); border-radius: var(--r); padding: 8px 10px 8px 0; }
+.alert .sev { align-self: stretch; border-radius: 0 3px 3px 0; }
+.alert.crit .sev { background: var(--crit); } .alert.warn .sev { background: var(--warn); } .alert.info .sev { background: var(--accent); }
+.alert b { font-weight: 600; }
+
+table.t { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.t th { text-align: left; font-weight: 500; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.t td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+table.t tr:last-child td { border-bottom: 0; }
+.scroll-x { overflow-x: auto; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+
+/* Boucle fermée */
+.axes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.axis-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.axis-top { display: flex; gap: 14px; align-items: center; justify-content: space-between; }
+.layers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.layer { border-top: 2px solid var(--line); padding-top: 8px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.layer.voulue { border-color: var(--muted); } .layer.realisee { border-color: var(--accent); } .layer.vecue { border-color: var(--t-cont); }
+.kpi { display: flex; flex-direction: column; gap: 3px; }
+.kpi input[type="range"] { width: 100%; accent-color: var(--accent); }
+.kpi .row { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; }
+.orient { border-radius: var(--r); padding: 10px 12px; }
+.orient.crit { background: var(--crit-soft); } .orient.warn { background: var(--warn-soft); } .orient.ok { background: var(--ok-soft); }
+.method { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; margin-top: 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.formula { font-family: var(--font-m); font-size: 12px; background: var(--surface-2); padding: 8px 10px; border-radius: var(--r); overflow-x: auto; }
+
+/* Récits */
+.recits-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 16px; align-items: start; }
+.filters { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: flex; flex-direction: column; gap: 12px; position: sticky; top: 76px; }
+.filters label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.recit { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.recit-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 12px; color: var(--muted); }
+.struct { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 3px 12px; font-size: 13.5px; }
+.struct dt { color: var(--muted); font-size: 12px; padding-top: 1px; }
+.struct dd { margin: 0; }
+.isolated { font-size: 12px; color: var(--muted); }
+.isolated s { text-decoration-color: var(--crit); }
+.list { display: flex; flex-direction: column; gap: 10px; }
+.spark { display: block; }
+
+/* Collecte */
+.collect { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.qcards { display: grid; gap: 8px; }
+.qcard { text-align: left; border: 1px solid var(--line); background: var(--surface-2); border-radius: var(--r); padding: 8px 10px; cursor: pointer; }
+.qcard[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.qcard b { display: block; font-size: 12px; font-family: var(--font-m); color: var(--accent); font-weight: 500; }
+.formrow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.formrow label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); min-width: 0; }
+.steps { display: flex; flex-direction: column; gap: 0; counter-reset: s; }
+.step { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+.step:last-child { border-bottom: 0; }
+.step .n { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-m); font-size: 11px; background: var(--accent-soft); color: var(--accent); }
+.hl { padding: 0 2px; border-radius: 3px; }
+.hl.ner { background: var(--accent-soft); color: var(--accent); font-family: var(--font-m); font-size: 12px; }
+.hl.jug { background: var(--crit-soft); color: var(--crit); text-decoration: line-through; }
+.textview { background: var(--surface-2); border-radius: var(--r); padding: 8px 10px; font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.decision { border-radius: var(--r); padding: 10px 12px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.decision.ok { background: var(--ok-soft); } .decision.crit { background: var(--crit-soft); }
+.meter { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+.meter i { display: block; height: 100%; }
+
+/* Dispositif */
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.guard { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.guard:last-child { border-bottom: 0; }
+pre.code { margin: 0; font-family: var(--font-m); font-size: 12px; background: var(--surface-2); border-radius: var(--r); padding: 10px; overflow: auto; max-height: 220px; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: var(--r); font-size: 13px; z-index: 20; }
+.demo-note { font-size: 12px; color: var(--muted); border: 1px dashed var(--line); border-radius: var(--r); padding: 6px 10px; }
+
+@keyframes ping { from { r: 9; opacity: .9; } to { r: 18; opacity: 0; } }
+.ping { animation: ping 2.2s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) { .ping { animation: none; opacity: .5; } }
+
+@media (max-width: 980px) {
+  .quad, .axes, .collect, .grid2, .method { grid-template-columns: minmax(0, 1fr); }
+  .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .recits-layout { grid-template-columns: minmax(0, 1fr); }
+  .filters { position: static; }
+}
+@media (max-width: 560px) {
+  .strip { grid-template-columns: minmax(0, 1fr); }
+  .layers { grid-template-columns: minmax(0, 1fr); }
+  .formrow { grid-template-columns: minmax(0, 1fr); }
+  .bars { grid-template-columns: minmax(0, 8rem) minmax(0, 1fr) 2rem; }
+  .struct { grid-template-columns: minmax(0, 1fr); }
+  .struct dt { padding-top: 6px; }
+}
+</style>
+</head>
+<body>
+<header class="top gutter">
+  <div class="wrap">
+    <div class="brand"><b>InnovAction<span>·</span>Scan</b><small>Signaux faibles &amp; gouvernance</small></div>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#pilotage">Vue Comex</a>
+      <a href="#boucle">Boucle stratégique</a>
+      <a href="#recits">Récits &amp; clusters</a>
+      <a href="#collecte">Collecte narrative</a>
+      <a href="#dispositif">Dispositif &amp; BI</a>
+    </nav>
+    <label class="scope small muted" for="scope">Périmètre
+      <select id="scope">
+        <option value="">Toutes les parties prenantes</option>
+      </select>
+    </label>
+  </div>
+</header>
+<main class="gutter"><div class="wrap" id="view"></div></main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+"use strict";
+/* ============================================================
+   InnovAction Scan — prototype
+   Toutes les données sont fictives (organisation industrielle ETI).
+   Le « moteur NLP » est une simulation à base de règles, exécutée
+   localement dans le navigateur, pour illustrer la chaîne de traitement.
+   ============================================================ */
+
+const DAY = 864e5;
+const TODAY = new Date(); TODAY.setHours(12, 0, 0, 0);
+const NOW = TODAY.getTime();
+
+const PP = ["Collaborateurs", "Clients", "Fournisseurs", "Régulateurs & ONG"];
+const PP_CODE = { "Collaborateurs": "COL", "Clients": "CLI", "Fournisseurs": "FOU", "Régulateurs & ONG": "ECO" };
+const CANAUX = {
+  "Collaborateurs": ["Bouton « Irritant terrain » (ERP)", "Cohorte mensuelle (email)", "QR code atelier"],
+  "Clients": ["Formulaire post-action", "Communauté bêta", "Cohorte (SMS)"],
+  "Fournisseurs": ["Portail fournisseurs", "Revue trimestrielle"],
+  "Régulateurs & ONG": ["Veille RSS juridique", "Veille rapports ONG"]
+};
+const TYPES = {
+  dys: { label: "Dysfonctionnement répété", short: "Dysfonctionnement", cls: "dys", color: "var(--t-dys)", w: 1 },
+  cont: { label: "Solution de contournement", short: "Contournement", cls: "cont", color: "var(--t-cont)", w: 1.5 },
+  rup: { label: "Rupture externe anticipée", short: "Rupture externe", cls: "rup", color: "var(--t-rup)", w: 1.3 }
+};
+const QUESTIONS = [
+  { id: "Q1", titre: "L'événement marquant", texte: "Pensez à votre expérience avec notre organisation au cours des 30 derniers jours. Racontez un événement précis qui a concrètement modifié votre façon de travailler ou d'interagir avec nous." },
+  { id: "Q2", titre: "La friction opérationnelle", texte: "Racontez la dernière fois où vous vous êtes dit : « Ce n'est pas possible de fonctionner ainsi ». Que s'est-il passé précisément (étapes, outils, conséquences) ?" },
+  { id: "Q3", titre: "L'étonnement / l'anomalie", texte: "Qu'avez-vous observé ou vécu récemment au sein de notre écosystème qui vous a surpris car cela sortait totalement des procédures habituelles ?" }
+];
+
+/* ---------- Axes stratégiques (stratégie voulue + réalisée) ---------- */
+const AXES = [
+  { id: "carbone", nom: "Décarbonation & supply chain", cible: "−30 % d'émissions scope 3 d'ici 2028",
+    kpis: [
+      { id: "k1", nom: "Réduction émissions scope 3", unite: "%", valeur: 18, cible: 30, min: 0, max: 40, sens: "up" },
+      { id: "k2", nom: "Fournisseurs conformes RSE", unite: "%", valeur: 92, cible: 90, min: 50, max: 100, sens: "up" }
+    ],
+    lecture: "Alerte de faisabilité : la stratégie se heurte à la réalité du marché fournisseurs. Réviser les critères ou accompagner le panel." },
+  { id: "ops", nom: "Excellence opérationnelle", cible: "+15 % de productivité par la digitalisation",
+    kpis: [
+      { id: "k3", nom: "Taux d'adoption de l'ERP", unite: "%", valeur: 94, cible: 90, min: 40, max: 100, sens: "up" },
+      { id: "k4", nom: "Temps de traitement d'un dossier", unite: "j", valeur: 2.1, cible: 2.5, min: 1, max: 6, sens: "down", step: 0.1 }
+    ],
+    lecture: "Alerte d'illusion de performance : le terrain compense manuellement (double saisie, tableurs). Suspendre la V2, réallouer le budget sur l'ergonomie." },
+  { id: "innov", nom: "Innovation & marché", cible: "Pénétrer le segment B2B industriel",
+    kpis: [
+      { id: "k5", nom: "Ventes nouvelle offre (vs plan)", unite: "%", valeur: 61, cible: 100, min: 0, max: 130, sens: "up" },
+      { id: "k6", nom: "Coût d'acquisition client", unite: "€", valeur: 1450, cible: 1100, min: 600, max: 2500, sens: "down", step: 10 }
+    ],
+    lecture: "Alerte d'opportunité : le marché ciblé réagit mal, mais une niche adjacente (agricole) crée un usage spontané. Étudier un pivot du budget marketing." },
+  { id: "conf", nom: "Conformité & licence à opérer", cible: "Zéro non-conformité majeure",
+    kpis: [
+      { id: "k7", nom: "Audits de conformité réussis", unite: "%", valeur: 100, cible: 100, min: 50, max: 100, sens: "up" },
+      { id: "k8", nom: "Incidents sécurité déclarés", unite: "", valeur: 2, cible: 3, min: 0, max: 12, sens: "down" }
+    ],
+    lecture: "Alerte réglementaire précoce : une restriction PFAS se dessine chez les concurrents et des incidents ne remontent pas au registre officiel." }
+];
+
+/* ---------- Clusters de faits (issus du clustering non supervisé) ---------- */
+const CLUSTERS = [
+  { id: "erp", label: "Tableurs parallèles pour compenser l'ERP", court: "Tableurs ERP", type: "cont", axe: "ops", pp: ["Collaborateurs"], proc: ["Administration des ventes", "Comptabilité", "Planification production"], grav: [3, 4],
+    weeks: [1, 1, 2, 2, 2, 3, 3, 4, 5, 6, 7, 8], kw: ["excel", "tableur", "fichier partagé", "erp", "macro", "en parallèle", "réimport"],
+    tpl: [
+      ["Clôture des commandes du jour, service ADV.", "Le module de validation de l'ERP refuse les commandes avec plusieurs lieux de livraison ; l'équipe les saisit dans un fichier Excel partagé puis les ressaisit le lendemain.", "Environ 1 h 30 de ressaisie par jour pour 2 personnes.", "cet ERP est une catastrophe"],
+      ["Préparation de l'inventaire mensuel, entrepôt Nord.", "Les écarts de stock ne s'exportent pas depuis l'ERP ; nous avons recréé un tableur avec des macros pour les calculer.", "Inventaire clôturé avec 2 jours de retard ; le tableur n'est pas sauvegardé sur le serveur.", "personne ne nous écoute"],
+      ["Facturation des avoirs clients, comptabilité.", "L'ERP bloque l'avoir partiel ; nous exportons la facture, la modifions dans Excel et la réimportons manuellement.", "14 avoirs traités ainsi ce mois-ci ; 3 erreurs de TVA détectées au contrôle.", "procédure absurde"],
+      ["Planification de la production, atelier B.", "Le planning ERP n'intègre pas les arrêts de maintenance ; le chef d'équipe tient un planning Excel en parallèle, seul utilisé en atelier.", "Les données de l'ERP ne reflètent plus le planning réel depuis 6 semaines.", ""]
+    ] },
+  { id: "rse", label: "Achats hors panel RSE pour éviter les ruptures", court: "Contournement RSE", type: "cont", axe: "carbone", pp: ["Collaborateurs", "Collaborateurs", "Fournisseurs"], proc: ["Achats"], grav: [3, 4],
+    weeks: [0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 2, 3], kw: ["rse", "carbone", "panel", "non audité", "critère", "seuil", "dépannage"],
+    tpl: [
+      ["Réapprovisionnement urgent en résine, service Achats.", "Le fournisseur référencé RSE ne pouvait pas livrer avant 5 semaines ; la commande a été passée chez un fournisseur non audité en la classant « dépannage ».", "Commande de 18 t hors panel RSE, sans suivi carbone associé.", "les critères RSE sont irréalistes"],
+      ["Appel d'offres emballages du trimestre.", "Le critère carbone a été retiré de la grille de notation après qu'aucun candidat n'a pu fournir son bilan dans le délai.", "Attribution à l'offre la moins chère ; écart estimé de 22 % d'émissions par rapport au contrat précédent.", ""],
+      ["Rupture sur un composant électronique.", "La commande a été fractionnée en plusieurs bons sous le seuil de 10 k€ qui déclenche le contrôle RSE.", "4 bons de commande sous le seuil en une semaine.", "on n'a pas le choix"]
+    ] },
+  { id: "usage", label: "Usage détourné du capteur en milieu agricole", court: "Usage agricole", type: "cont", axe: "innov", pp: ["Clients", "Clients", "Fournisseurs"], proc: ["Usage produit", "Distribution"], grav: [2, 3],
+    weeks: [0, 0, 0, 0, 1, 0, 0, 1, 1, 2, 2, 3], kw: ["capteur", "cuve", "agricole", "kit", "revendeur", "irrigation", "détourn", "coopérative"],
+    tpl: [
+      ["Exploitation agricole, irrigation.", "Le client a fixé notre capteur de niveau sur ses cuves d'irrigation au lieu des cuves de fioul prévues, avec un support modifié imprimé en 3D.", "12 capteurs commandés pour cet usage ; le client demande une fixation adaptée.", "génial"],
+      ["Coopérative viticole, période de vendanges.", "Les capteurs servent à suivre le niveau des cuves de fermentation ; l'alerte de seuil bas déclenche les remontages.", "Une 2e coopérative a commandé 30 unités après démonstration.", ""],
+      ["Revendeur de matériel agricole, Occitanie.", "Le revendeur vend notre capteur en kit avec une sonde de température d'une autre marque.", "40 kits vendus en 2 mois, hors de nos canaux.", "le marketing ne voit rien"]
+    ] },
+  { id: "retards", label: "Retards de livraison du composant Z-40", court: "Retards Z-40", type: "dys", axe: "carbone", pp: ["Fournisseurs", "Collaborateurs"], proc: ["Approvisionnement", "Production"], grav: [3, 4],
+    weeks: [2, 3, 2, 3, 4, 3, 3, 2, 3, 3, 2, 3], kw: ["retard", "livré", "livraison", "délai", "transporteur", "stock de sécurité", "z-40", "sous-traitant"],
+    tpl: [
+      ["Livraison du composant Z-40, transporteur habituel.", "Le lot attendu mardi a été livré vendredi ; la plateforme de transit a été fermée 2 jours.", "Ligne 2 arrêtée 6 heures ; 340 pièces reportées.", "fournisseur pas fiable"],
+      ["Approvisionnement en acier laminé.", "Le fournisseur a porté son délai de 3 à 7 semaines suite à la maintenance de son laminoir.", "Stock de sécurité ramené à 9 jours.", ""],
+      ["Déclaration sur le portail fournisseurs.", "Notre sous-traitant de rang 2 n'a pas reçu ses matières ; il a livré 60 % de la quantité commandée.", "Hausse de 12 % du coût unitaire sur le lot de remplacement.", "comme d'habitude"]
+    ] },
+  { id: "norme", label: "Restriction PFAS visant les joints d'étanchéité", court: "PFAS joints", type: "rup", axe: "conf", pp: ["Régulateurs & ONG", "Régulateurs & ONG", "Collaborateurs"], proc: ["Veille réglementaire"], grav: [4, 5],
+    weeks: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2], kw: ["pfas", "mise en demeure", "régulateur", "restriction", "ong", "norme", "consultation", "autorité"],
+    tpl: [
+      ["Veille juridique sectorielle.", "L'autorité de contrôle a adressé une mise en demeure à un concurrent pour présence de PFAS dans un joint d'étanchéité.", "Notre gamme utilise un joint de la même famille sur 3 références.", ""],
+      ["Rapport d'ONG sur la filière.", "Le rapport publie des mesures de PFAS dans les rejets de 4 sites industriels du secteur, dont un à 20 km de notre usine.", "Demande d'information reçue d'une collectivité locale.", "ça va nous retomber dessus"],
+      ["Consultation publique de l'agence européenne.", "Le projet de restriction prévoit une application 18 mois après publication, sans dérogation pour les joints industriels.", "Échéance estimée : second semestre 2027.", ""]
+    ] },
+  { id: "saisie", label: "Double saisie entre outils non connectés", court: "Double saisie", type: "dys", axe: "ops", pp: ["Collaborateurs"], proc: ["Achats", "Service après-vente", "Référentiel produits"], grav: [2, 3],
+    weeks: [3, 3, 4, 3, 3, 4, 3, 3, 4, 3, 3, 3], kw: ["recopi", "double saisie", "pas connectés", "papier", "workflow", "pim", "ressaisis"],
+    tpl: [
+      ["Validation des bons de commande au-delà de 5 k€.", "La validation se fait dans l'ERP puis doit être recopiée dans l'outil de workflow achats ; les deux outils ne sont pas connectés.", "Délai moyen de validation : 4 jours au lieu de 1.", "usine à gaz"],
+      ["Saisie des temps d'intervention, techniciens SAV.", "Les temps sont saisis sur tablette puis ressaisis sur la feuille de pointage papier exigée par la paie.", "20 minutes par jour et par technicien.", ""],
+      ["Création d'un nouvel article.", "La fiche est créée dans l'ERP, puis dans le PIM, puis sur le site e-commerce, avec les mêmes informations.", "3 jours avant mise en ligne ; 2 erreurs de prix constatées ce mois-ci.", "ridicule"]
+    ] },
+  { id: "portail", label: "Blocages du parcours sur le portail client", court: "Portail client", type: "dys", axe: "innov", pp: ["Clients"], proc: ["Parcours client en ligne"], grav: [2, 3],
+    weeks: [4, 5, 5, 6, 5, 4, 3, 2, 2, 1, 1, 0], kw: ["portail", "navigateur", "bouton", "paiement", "compte", "404", "téléchargement", "en ligne"],
+    tpl: [
+      ["Création de compte sur le portail client.", "L'étape 3 (validation du SIRET) échoue sous Safari ; le client a dû appeler le service client.", "Compte ouvert avec 2 jours de retard.", "site nul"],
+      ["Première commande en ligne.", "Le bouton de paiement ne répond plus après l'ajout d'une adresse de livraison secondaire.", "Commande passée par téléphone ; 1 h de traitement côté ADV.", ""],
+      ["Téléchargement des fiches techniques.", "Le lien renvoie une erreur 404 pour les produits de la nouvelle gamme.", "Fiches envoyées par email, réponse sous 48 h.", "amateurisme"]
+    ] },
+  { id: "secu", label: "Écarts de sécurité non déclarés en atelier", court: "Sécurité atelier", type: "dys", axe: "conf", pp: ["Collaborateurs", "Fournisseurs"], proc: ["Production", "Maintenance"], grav: [5, 5],
+    weeks: [0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1], kw: ["sécurité", "carter", "accident", "consignation", "chariot", "protection", "blessé", "registre"],
+    tpl: [
+      ["Changement d'outil sur presse, équipe de nuit.", "Le carter de protection a été retiré pour gagner du temps et n'a pas été remis avant le redémarrage.", "Quasi-accident sans blessé ; aucune déclaration effectuée.", "on fait tous comme ça"],
+      ["Chargement de camion, quai 4.", "Le chariot élévateur a été utilisé sans la vérification de début de poste, faute de temps.", "Fourche endommagée ; incident non consigné au registre.", ""],
+      ["Intervention de maintenance sous-traitée.", "La consignation électrique a été faite par l'intervenant extérieur sans bon d'intervention signé.", "Intervention de 3 heures sur une armoire partiellement sous tension.", "inconscient"]
+    ] },
+  { id: "nc", label: "Faits non classés (inconnus inconnus)", court: "Non classés", type: "dys", axe: null, pp: [], proc: [], grav: [2, 3], weeks: Array(12).fill(0), kw: [], tpl: [] }
+];
+const CL = Object.fromEntries(CLUSTERS.map(c => [c.id, c]));
+const AX = Object.fromEntries(AXES.map(a => [a.id, a]));
+
+const ACTION_STATUTS = ["À instruire", "Investigation", "Plan actif", "Résolu"];
+const SEED_ACTIONS = [
+  { id: "A-101", cluster: "portail", titre: "Correctif étape 3 et recette multi-navigateurs", resp: "DSI — e-commerce", statut: "Résolu", ech: -20 },
+  { id: "A-102", cluster: "erp", titre: "Inventaire terrain des tableurs parallèles (ADV, compta, atelier B)", resp: "Direction des opérations", statut: "Investigation", ech: 15 },
+  { id: "A-103", cluster: "retards", titre: "Double sourcing du composant Z-40", resp: "Direction achats", statut: "Plan actif", ech: 45 },
+  { id: "A-104", cluster: "secu", titre: "Revue des consignations avec les sous-traitants", resp: "QHSE", statut: "À instruire", ech: 10 }
+];
+
+/* ---------- Génération déterministe des récits de démonstration ---------- */
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const pick = (r, arr) => arr[Math.floor(r() * arr.length)];
+function seedRecits() {
+  const r = rng(20261028), out = [];
+  let n = 1;
+  for (const c of CLUSTERS) {
+    c.weeks.forEach((count, w) => {
+      for (let k = 0; k < count; k++) {
+        const t = c.tpl[(n + k) % c.tpl.length];
+        const pp = pick(r, c.pp);
+        const age = (11 - w) * 7 + r() * 6.9;
+        out.push({
+          id: "R-" + String(n++).padStart(4, "0"), ts: NOW - age * DAY, pp, canal: pick(r, CANAUX[pp]),
+          cohorte: PP_CODE[pp] + "-" + String(100 + Math.floor(r() * 60)), question: pick(r, QUESTIONS).id,
+          cluster: c.id, type: c.type, proc: pick(r, c.proc), grav: c.grav[0] + Math.round(r() * (c.grav[1] - c.grav[0])),
+          ctx: t[0], fait: t[1], csq: t[2], jug: t[3] && r() > 0.35 ? [t[3]] : [], fact: 0.74 + r() * 0.24, demo: true
+        });
+      }
+    });
+  }
+  return out;
+}
+
+/* ---------- État ---------- */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("ias." + k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("ias." + k, JSON.stringify(v)); } catch { /* stockage indisponible */ } }
+};
+const state = {
+  seed: seedRecits(),
+  user: store.get("recits", []),
+  actions: store.get("actions", null) || SEED_ACTIONS.map(a => ({ ...a, ts: NOW + a.ech * DAY })),
+  kpis: store.get("kpis", {}),
+  scope: store.get("scope", ""),
+  filters: { cluster: "", type: "", q: "", pp: "" },
+  shown: 25,
+  draft: null
+};
+for (const a of AXES) for (const k of a.kpis) if (state.kpis[k.id] != null) k.valeur = state.kpis[k.id];
+const allRecits = () => state.seed.concat(state.user);
+const scoped = () => allRecits().filter(r => !state.scope || r.pp === state.scope);
+
+/* ---------- Calculs ---------- */
+const ageOf = r => (NOW - r.ts) / DAY;
+const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0;
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
+function clusterStats(recs) {
+  return CLUSTERS.map(c => {
+    const rs = recs.filter(r => r.cluster === c.id);
+    const cur = rs.filter(r => ageOf(r) < 28), prev = rs.filter(r => ageOf(r) >= 28 && ageOf(r) < 56);
+    const weeks = Array.from({ length: 12 }, (_, i) => rs.filter(r => { const a = ageOf(r); return a >= (11 - i) * 7 && a < (12 - i) * 7; }).length);
+    const g = arr => arr.length ? mean(arr.map(r => r.grav)) : null;
+    const vel = (cur.length - prev.length) / (prev.length + 1);
+    const cohorts = new Set(cur.map(r => r.cohorte)).size;
+    return {
+      ...c, rs, n: rs.length, c2: cur.length, c1: prev.length,
+      g2: g(cur) ?? g(rs) ?? c.grav[0], g1: g(prev) ?? g(cur) ?? c.grav[0],
+      vel, cohorts, groups: new Set(cur.map(r => r.pp)).size, weeks,
+      weak: cur.length > 0 && cur.length <= 10 && vel >= 1.5 && cohorts >= 3,
+      confirmed: cur.length > 0 && prev.length > 0 && cohorts >= 3
+    };
+  }).filter(c => c.id !== "nc" || c.n > 0);
+}
+
+function attainment(k) {
+  const v = +k.valeur, c = +k.cible;
+  if (k.sens === "up") return clamp(c === 0 ? 1 : v / c, 0, 1);
+  return clamp(v === 0 ? 1 : c / v, 0, 1);
+}
+function axisSDS(axe, stats) {
+  const h = mean(axe.kpis.map(attainment));
+  const linked = stats.filter(s => s.axe === axe.id);
+  const P = linked.reduce((s, c) => s + c.c2 * (c.g2 / 5) * TYPES[c.type].w * (1 + 0.25 * Math.max(c.vel, 0)), 0);
+  const p = 1 - Math.exp(-P / 20);
+  return { h, p, P, sds: 1 + 9 * h * p, linked };
+}
+const band = s => s >= 7 ? "crit" : s >= 4 ? "warn" : "ok";
+const bandLabel = s => s >= 7 ? "Divergence forte" : s >= 4 ? "Vigilance" : "Alignement";
+
+/* ---------- Utilitaires d'affichage ---------- */
+const esc = s => String(s ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+const fmt1 = x => x.toLocaleString("fr-FR", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+const pct = x => (x >= 0 ? "+" : "−") + Math.round(Math.abs(x) * 100) + " %";
+const dateFR = ts => new Date(ts).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+const typePill = t => `<span class="pill ${TYPES[t].cls}">${TYPES[t].short}</span>`;
+function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 2600); }
+
+function polar(cx, cy, r, deg) { const a = deg * Math.PI / 180; return [cx + r * Math.cos(a), cy - r * Math.sin(a)]; }
+function arc(cx, cy, r, d0, d1) { const [x0, y0] = polar(cx, cy, r, d0), [x1, y1] = polar(cx, cy, r, d1); return `M${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${Math.abs(d1 - d0) > 180 ? 1 : 0} 1 ${x1.toFixed(1)},${y1.toFixed(1)}`; }
+
+function gauge(v, size = 120) {
+  const cx = 60, cy = 58, r = 46, deg = x => 180 - (x - 1) / 9 * 180;
+  const seg = (a, b, col) => `<path d="${arc(cx, cy, r, deg(a), deg(b))}" stroke="${col}" stroke-width="10" fill="none" opacity=".22"/>`;
+  const [nx, ny] = polar(cx, cy, r - 16, deg(v));
+  return `<svg class="chart" viewBox="0 0 120 74" style="width:${size}px" role="img" aria-label="Score de divergence ${fmt1(v)} sur 10">
+    ${seg(1, 4, "var(--ok)")}${seg(4, 7, "var(--warn)")}${seg(7, 10, "var(--crit)")}
+    <path d="${arc(cx, cy, r, 180, deg(v))}" stroke="var(--${band(v)})" stroke-width="10" fill="none"/>
+    <line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="${cx}" cy="${cy}" r="3.5" fill="var(--ink)"/>
+    <text x="10" y="72">1</text><text x="104" y="72">10</text>
+  </svg>`;
+}
+function spark(arr, w = 96, h = 24, col = "var(--accent)") {
+  const max = Math.max(1, ...arr), step = w / (arr.length - 1);
+  const pts = arr.map((v, i) => [i * step, h - 2 - v / max * (h - 4)]);
+  const line = pts.map(p => p.map(n => n.toFixed(1)).join(",")).join(" ");
+  const last = pts[pts.length - 1];
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true">
+    <polygon points="0,${h} ${line} ${w},${h}" fill="${col}" opacity=".12"/>
+    <polyline points="${line}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linejoin="round"/>
+    <circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2.5" fill="${col}"/></svg>`;
+}
+
+/* ---------- Radar de vélocité ---------- */
+function velR(v) {
+  if (v < 0) return 18 + (clamp(v, -1, 0) + 1) * 22;
+  if (v < 0.5) return 40 + v / 0.5 * 30;
+  if (v < 1.5) return 70 + (v - 0.5) * 35;
+  return 105 + clamp((v - 1.5) / 2.5, 0, 1) * 35;
+}
+function radar(stats) {
+  const cx = 170, cy = 160, sectors = { dys: [90, 210], cont: [330, 450], rup: [210, 330] };
+  let s = `<svg class="chart" viewBox="-70 0 480 330" style="max-width:520px;margin:0 auto" role="img" aria-label="Radar de vélocité des clusters">`;
+  [[40, "Stable"], [70, "Croissance"], [105, "Accélération"], [140, "Emballement"]].forEach(([r, l]) => {
+    s += `<circle class="grid" cx="${cx}" cy="${cy}" r="${r}"/><text x="${cx + 3}" y="${cy - r + 11}">${l}</text>`;
+  });
+  for (const d of [90, 210, 330]) { const [x, y] = polar(cx, cy, 148, d); s += `<line class="grid" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`; }
+  const [lx3, ly3] = polar(cx, cy, 152, 270);
+  s += `<text x="-64" y="14" style="fill:var(--t-dys)">Dysfonctionnements</text>`;
+  s += `<text x="404" y="14" text-anchor="end" style="fill:var(--t-cont)">Contournements</text>`;
+  s += `<text x="${lx3.toFixed(0)}" y="${(ly3 + 14).toFixed(0)}" text-anchor="middle" style="fill:var(--t-rup)">Ruptures externes</text>`;
+  for (const t of Object.keys(sectors)) {
+    const items = stats.filter(c => c.type === t && c.n > 0), [a0, a1] = sectors[t];
+    items.forEach((c, i) => {
+      const deg = a0 + (a1 - a0) * (i + 1) / (items.length + 1), r = velR(c.vel);
+      const [x, y] = polar(cx, cy, r, deg), rad = 4 + Math.sqrt(c.c2) * 1.8;
+      if (c.weak) s += `<circle class="ping" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9" fill="none" stroke="var(--accent)" stroke-width="1.5"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(rad + 4).toFixed(1)}" fill="none" stroke="var(--accent)" stroke-dasharray="3 2"/>`;
+      s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rad.toFixed(1)}" fill="${TYPES[c.type].color}" fill-opacity=".85"><title>${esc(c.label)} — ${c.c2} récits (28 j), vélocité ${pct(c.vel)}</title></circle>`;
+      const right = x >= cx;
+      s += `<text class="lbl" x="${(x + (right ? rad + 4 : -rad - 4)).toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="${right ? "start" : "end"}">${esc(c.court)}</text>`;
+    });
+  }
+  return s + `</svg>`;
+}
+
+/* ---------- Matrice de matérialité ---------- */
+function matrix(stats) {
+  const W = 420, H = 310, L = 40, R = 16, T = 28, B = 34, items = stats.filter(c => c.n > 0);
+  const xmax = Math.max(10, ...items.map(c => Math.max(c.c1, c.c2))) * 1.1;
+  const X = v => L + v / xmax * (W - L - R), Y = g => T + (5 - g) / 4 * (H - T - B);
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Matrice de matérialité : fréquence par gravité">
+    <defs><marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--muted)"/></marker></defs>
+    <rect x="${X(xmax / 2)}" y="${T}" width="${W - R - X(xmax / 2)}" height="${Y(3) - T}" fill="var(--crit)" opacity=".07"/>`;
+  for (let g = 1; g <= 5; g++) s += `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(g)}" y2="${Y(g)}"/><text x="${L - 8}" y="${Y(g) + 3}" text-anchor="end">${g}</text>`;
+  const step = xmax > 30 ? 10 : 5;
+  for (let v = 0; v <= xmax; v += step) s += `<text x="${X(v)}" y="${H - B + 14}" text-anchor="middle">${v}</text>`;
+  s += `<line class="axis" x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}"/>`;
+  s += `<text x="${(L + W - R) / 2}" y="${H - 4}" text-anchor="middle">Fréquence du fait constaté (récits, 28 derniers jours)</text>`;
+  s += `<text transform="translate(11 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">Gravité modélisée (1–5)</text>`;
+  s += `<text x="${W - R - 6}" y="${T + 13}" text-anchor="end" style="fill:var(--crit)">Arbitrage Comex</text>`;
+  for (const c of items) {
+    const x0 = X(c.c1), y0 = Y(c.g1), x1 = X(c.c2), y1 = Y(c.g2);
+    if (Math.hypot(x1 - x0, y1 - y0) > 8) s += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 2" marker-end="url(#ah)"/>`;
+  }
+  for (const c of items) {
+    const x1 = X(c.c2), y1 = Y(c.g2), rad = 5 + Math.sqrt(c.cohorts) * 1.5;
+    s += `<circle cx="${x1.toFixed(1)}" cy="${y1.toFixed(1)}" r="${rad.toFixed(1)}" fill="${TYPES[c.type].color}" fill-opacity=".85" stroke="var(--surface)" stroke-width="1.5"><title>${esc(c.label)} : ${c.c2} récits, gravité ${fmt1(c.g2)} (période précédente : ${c.c1} récits)</title></circle>`;
+    const right = x1 < W - 110;
+    s += `<text class="lbl" x="${(x1 + (right ? rad + 4 : -rad - 4)).toFixed(1)}" y="${(y1 - rad - 2).toFixed(1)}" text-anchor="${right ? "start" : "end"}">${esc(c.court)}</text>`;
+  }
+  return s + `</svg>`;
+}
+
+/* ---------- Lexique des verbes d'action (pression sémantique) ---------- */
+const VERBES = [["contourn", "contourner"], ["ressais", "ressaisir"], ["recopi", "recopier"], ["export", "exporter"], ["fractionn", "fractionner"], ["retir", "retirer"], ["bloqu", "bloquer"], ["refus", "refuser"], ["échou", "échouer"], ["appel", "appeler"], ["modifi", "modifier"], ["arrêt", "arrêter"], ["livr", "livrer"], ["command", "commander"], ["utilis", "utiliser"], ["saisi", "saisir"], ["fix", "fixer"], ["vend", "vendre"]];
+function verbPressure(recs) {
+  const txt = r => (r.ctx + " " + r.fait + " " + r.csq).toLowerCase();
+  const cur = recs.filter(r => ageOf(r) < 28).map(txt), prev = recs.filter(r => ageOf(r) >= 28 && ageOf(r) < 56).map(txt);
+  const count = (arr, st) => arr.reduce((n, t) => n + (t.match(new RegExp("\\b" + st, "g")) || []).length, 0);
+  return VERBES.map(([st, v]) => ({ v, n: count(cur, st), p: count(prev, st) })).filter(x => x.n > 0).sort((a, b) => b.n - a.n).slice(0, 12);
+}
+
+/* ---------- Alertes ---------- */
+function buildAlerts(stats) {
+  const out = [];
+  for (const a of AXES) {
+    const r = axisSDS(a, stats);
+    if (r.sds >= 7) out.push({ sev: "crit", cl: r.linked.slice().sort((x, y) => y.c2 - x.c2)[0]?.id, html: `<b>SDS ${fmt1(r.sds)} — ${esc(a.nom)}</b><br><span class="muted small">KPI au vert (${Math.round(r.h * 100)} % d'atteinte) mais pression terrain forte. Orientation corrective du Conseil à inscrire à l'ordre du jour.</span>` });
+  }
+  for (const c of stats.filter(c => c.weak)) out.push({ sev: "warn", cl: c.id, obs: !c.confirmed, html: `<b>Signal faible : ${esc(c.label)}</b><br><span class="muted small">${c.c2} récits, vélocité ${pct(c.vel)}, ${c.cohorts} cohortes indépendantes.${c.confirmed ? "" : " En observation : double enregistrement non atteint, pas d'action corrective à ce stade."}</span>` });
+  for (const c of stats.filter(c => c.g2 >= 4.5 && c.c2 > 0 && !c.weak)) out.push({ sev: "crit", cl: c.id, html: `<b>Gravité critique : ${esc(c.label)}</b><br><span class="muted small">${c.c2} récits sur 28 j, gravité moyenne ${fmt1(c.g2)}/5.</span>` });
+  return out;
+}
+const hasAction = id => state.actions.some(a => a.cluster === id && a.statut !== "Résolu");
+
+/* ============================================================
+   VUES
+   ============================================================ */
+function viewPilotage() {
+  const recs = scoped(), stats = clusterStats(recs), sdsAll = AXES.map(a => axisSDS(a, stats).sds);
+  const sdsG = Math.max(...sdsAll) * 0.6 + mean(sdsAll) * 0.4;
+  const cur = recs.filter(r => ageOf(r) < 28), prev = recs.filter(r => ageOf(r) >= 28 && ageOf(r) < 56);
+  const weak = stats.filter(c => c.weak), alerts = buildAlerts(stats);
+  const procs = {}; cur.forEach(r => procs[r.proc] = (procs[r.proc] || 0) + 1);
+  const procList = Object.entries(procs).sort((a, b) => b[1] - a[1]).slice(0, 7), pmax = Math.max(1, ...procList.map(p => p[1]));
+  const verbs = verbPressure(recs), vmax = Math.max(1, ...verbs.map(v => v.n));
+  const declining = stats.filter(c => c.c1 >= 3 && c.c2 < c.c1 * 0.5), auto = declining.filter(c => !state.actions.some(a => a.cluster === c.id));
+  const actOpen = state.actions.filter(a => a.statut !== "Résolu");
+
+  return `
+  <div class="page-head">
+    <div><div class="eyebrow">Synthèse pour le comité exécutif · lecture en 3 minutes</div><h2>Ce que le terrain dit de la stratégie</h2></div>
+    <p class="small">Données au ${TODAY.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}. Fenêtre d'analyse : 28 jours glissants, comparée aux 28 jours précédents.</p>
+  </div>
+  <section class="strip">
+    <div class="tile sds">${gauge(sdsG, 110)}<div><div class="eyebrow">Score de divergence stratégique</div><div class="big">${fmt1(sdsG)}<span class="muted" style="font-size:1rem">/10</span></div><span class="pill ${band(sdsG)}">${bandLabel(sdsG)}</span></div></div>
+    <div class="tile"><div class="eyebrow">Signaux faibles émergents</div><div class="big">${weak.length}</div><span class="small muted">${weak.map(w => esc(w.court)).join(" · ") || "Aucun"}</span></div>
+    <div class="tile"><div class="eyebrow">Récits factuels · 28 j</div><div class="big">${cur.length}</div><span class="small ${cur.length >= prev.length ? "up" : "down"}">${pct((cur.length - prev.length) / Math.max(prev.length, 1))} vs période précédente</span></div>
+    <div class="tile"><div class="eyebrow">Alertes ouvertes</div><div class="big">${alerts.length}</div><span class="small muted">${actOpen.length} actions en cours au registre</span></div>
+  </section>
+
+  <section class="quad">
+    <article class="panel">
+      <div class="panel-head"><h3><span class="idx">1</span>Cartographie des faits observés</h3><span class="small muted">28 derniers jours</span></div>
+      <div class="eyebrow">Fréquence des événements par processus</div>
+      <div class="bars">${procList.map(([p, n]) => `<span class="name small">${esc(p)}</span><span class="bar"><i style="width:${n / pmax * 100}%"></i></span><span class="num small">${n}</span>`).join("")}</div>
+      <div class="eyebrow">Pression sémantique des verbes d'action</div>
+      <div class="chips">${verbs.map(v => `<span class="chip" style="font-size:${11 + v.n / vmax * 7}px">${v.v}<span class="d ${v.n > v.p ? "up" : v.n < v.p ? "down" : "muted"}">${v.n > v.p ? "▲" : v.n < v.p ? "▼" : "="}${v.n}</span></span>`).join("")}</div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head"><h3><span class="idx">2</span>Radar de détection des écarts</h3><span class="small muted">distance au centre = vélocité</span></div>
+      ${radar(stats)}
+      <div class="legend"><span><i style="background:var(--t-dys)"></i>Dysfonctionnement</span><span><i style="background:var(--t-cont)"></i>Contournement</span><span><i style="background:var(--t-rup)"></i>Rupture externe</span><span><i style="border:1px dashed var(--accent)"></i>Signal faible</span></div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head"><h3><span class="idx">3</span>Matrice de matérialité par l'impact</h3><span class="small muted">flèches : déplacement depuis la période précédente</span></div>
+      ${matrix(stats)}
+    </article>
+
+    <article class="panel">
+      <div class="panel-head"><h3><span class="idx">4</span>Alertes &amp; registre d'actions</h3><span class="small muted">Taux d'auto-résolution : <b class="num">${declining.length ? Math.round(auto.length / declining.length * 100) : 0} %</b></span></div>
+      <div class="alerts">${alerts.map(a => `<div class="alert ${a.sev}"><span class="sev"></span><div>${a.html}</div><div>${a.cl ? (hasAction(a.cl) ? `<span class="pill neutral">Action en cours</span>` : `<button class="btn small" data-act="open" data-cl="${a.cl}">${a.obs ? "Mettre en veille" : "Ouvrir une investigation"}</button>`) : ""}</div></div>`).join("") || `<p class="muted">Aucune alerte.</p>`}</div>
+      <div class="scroll-x"><table class="t"><thead><tr><th>Action</th><th>Porteur</th><th>Statut</th></tr></thead><tbody>
+        ${state.actions.map(a => `<tr><td><span class="mono small muted">${a.id}</span> ${esc(a.titre)}<br><span class="small muted">${esc(CL[a.cluster]?.court || "")} · échéance ${dateFR(a.ts)}</span></td><td class="small">${esc(a.resp)}</td><td><select data-act="status" data-id="${a.id}" aria-label="Statut de ${a.id}">${ACTION_STATUTS.map(s => `<option${s === a.statut ? " selected" : ""}>${s}</option>`).join("")}</select></td></tr>`).join("")}
+      </tbody></table></div>
+      <p class="small muted">Règle du double enregistrement : un signal ne remonte au Comex qu'après confirmation sur deux périodes et par au moins 3 cohortes indépendantes. Objectif : éviter les surréactions et le micro-management.</p>
+    </article>
+  </section>
+
+  <section class="panel" style="margin-top:16px">
+    <div class="panel-head"><h3>Écoute par partie prenante</h3><span class="small muted">28 derniers jours · toutes données anonymisées par cohorte</span></div>
+    <div class="scroll-x"><table class="t"><thead><tr><th>Partie prenante</th><th>Récits</th><th>Cohortes actives</th><th>Factualité moyenne</th><th>Principal fait remonté</th><th>Tendance 12 sem.</th></tr></thead><tbody>
+    ${PP.map(p => {
+      const rs = allRecits().filter(r => r.pp === p), c = rs.filter(r => ageOf(r) < 28);
+      const top = clusterStats(rs).filter(s => s.c2 > 0).sort((a, b) => b.c2 - a.c2)[0];
+      const wk = Array.from({ length: 12 }, (_, i) => rs.filter(r => { const a = ageOf(r); return a >= (11 - i) * 7 && a < (12 - i) * 7; }).length);
+      return `<tr><td><b>${p}</b></td><td class="num">${c.length}</td><td class="num">${new Set(c.map(r => r.cohorte)).size}</td><td class="num">${c.length ? Math.round(mean(c.map(r => r.fact)) * 100) + " %" : "—"}</td><td class="small">${top ? esc(top.label) : "—"}</td><td>${spark(wk)}</td></tr>`;
+    }).join("")}
+    </tbody></table></div>
+  </section>`;
+}
+
+function viewBoucle() {
+  const stats = clusterStats(scoped());
+  const cards = AXES.map(a => {
+    const r = axisSDS(a, stats), b = band(r.sds);
+    return `<article class="axis-card">
+      <div class="axis-top"><div><div class="eyebrow">Axe stratégique</div><h3>${esc(a.nom)}</h3></div>
+        <div style="text-align:center">${gauge(r.sds, 104)}<div class="num" style="font-weight:600">SDS ${fmt1(r.sds)}</div></div></div>
+      <div class="layers">
+        <div class="layer voulue"><div class="eyebrow">Voulue</div><p>${esc(a.cible)}</p></div>
+        <div class="layer realisee"><div class="eyebrow">Réalisée · KPI</div>
+          ${a.kpis.map(k => `<div class="kpi"><div class="row"><span>${esc(k.nom)}</span></div>
+            <input type="range" id="kpi-${k.id}" min="${k.min}" max="${k.max}" step="${k.step || 1}" value="${k.valeur}" data-act="kpi" data-ax="${a.id}" data-k="${k.id}" aria-label="${esc(k.nom)}">
+            <div class="row"><span class="num" id="kv-${k.id}"><b>${(+k.valeur).toLocaleString("fr-FR")}${k.unite ? " " + k.unite : ""}</b></span><span class="num muted">cible ${k.sens === "down" ? "≤" : "≥"} ${k.cible.toLocaleString("fr-FR")}${k.unite ? " " + k.unite : ""}</span></div></div>`).join("")}
+          <span class="small muted">Atteinte moyenne : <b class="num">${Math.round(r.h * 100)} %</b></span>
+        </div>
+        <div class="layer vecue"><div class="eyebrow">Vécue · signaux terrain</div>
+          ${r.linked.filter(c => c.n > 0).map(c => `<div class="small"><b>${esc(c.court)}</b> ${typePill(c.type)}<br><span class="muted num">${c.c2} récits · ${pct(c.vel)}${c.weak ? " · signal faible" : ""}</span></div>`).join("") || `<span class="small muted">Aucun récit rattaché.</span>`}
+          <span class="small muted">Pression terrain : <b class="num">${Math.round(r.p * 100)} %</b></span>
+        </div>
+      </div>
+      <div class="orient ${b}"><div class="eyebrow">${bandLabel(r.sds)} · perspective d'évaluation</div><p>${b === "ok" ? "Les faits remontés ne contredisent pas la trajectoire affichée. Poursuivre et surveiller les signaux émergents." : esc(a.lecture)}</p></div>
+    </article>`;
+  }).join("");
+  return `
+  <div class="page-head">
+    <div><div class="eyebrow">Alignement stratégique en boucle fermée</div><h2>Stratégie voulue, réalisée, vécue</h2></div>
+    <p class="small">Faites varier les indicateurs de gestion : le score de divergence se recalcule. Un SDS élevé signale des KPI au vert démentis par le terrain.</p>
+  </div>
+  <section class="axes">${cards}</section>
+  <section class="method">
+    <div><div class="eyebrow">1 · Performance apparente</div><p class="small">Moyenne des taux d'atteinte des KPI de l'axe, plafonnés à 100 %.</p><div class="formula">h = moyenne(min(réalisé / cible, 1))</div></div>
+    <div><div class="eyebrow">2 · Pression terrain</div><p class="small">Récits des 28 derniers jours rattachés à l'axe, pondérés par la gravité, le type (contournement × 1,5, rupture × 1,3) et l'accélération.</p><div class="formula">P = Σ n × gravité/5 × w_type × (1 + 0,25 × vélocité⁺)<br>p = 1 − e^(−P/20)</div></div>
+    <div><div class="eyebrow">3 · Score de divergence</div><p class="small">Le score monte lorsque la performance affichée est bonne et que le terrain la contredit. KPI au rouge et terrain en tension restent cohérents : la divergence est faible.</p><div class="formula">SDS = 1 + 9 × h × p   (échelle 1 à 10)</div></div>
+  </section>`;
+}
+
+function recitCard(r) {
+  const c = CL[r.cluster];
+  return `<article class="recit">
+    <div class="recit-meta"><span class="mono">${r.id}</span><span>${dateFR(r.ts)}</span><span>${r.pp}</span><span class="mono">cohorte ${r.cohorte}</span><span>${esc(r.canal)}</span>${typePill(r.type)}${r.demo ? "" : `<span class="pill neutral">Saisi dans la démo</span>`}</div>
+    <dl class="struct">
+      <dt>Contexte</dt><dd>${esc(r.ctx)}</dd>
+      <dt>Fait générateur</dt><dd>${esc(r.fait)}</dd>
+      <dt>Conséquence</dt><dd>${esc(r.csq) || `<span class="muted">non précisée</span>`}</dd>
+    </dl>
+    <div class="recit-meta"><span>Cluster : <b>${esc(c?.label || "")}</b></span><span>Gravité <b class="num">${r.grav}/5</b></span><span>Factualité <b class="num">${Math.round(r.fact * 100)} %</b></span>
+    ${r.jug.length ? `<span class="isolated">Jugement isolé : ${r.jug.map(j => `<s>« ${esc(j)} »</s>`).join(", ")}</span>` : ""}</div>
+  </article>`;
+}
+
+function viewRecits() {
+  const stats = clusterStats(scoped()), f = state.filters;
+  const q = f.q.trim().toLowerCase();
+  const list = scoped().filter(r => (!f.cluster || r.cluster === f.cluster) && (!f.type || r.type === f.type) && (!q || (r.ctx + r.fait + r.csq).toLowerCase().includes(q))).sort((a, b) => b.ts - a.ts);
+  return `
+  <div class="page-head">
+    <div><div class="eyebrow">Flux narratif anonymisé</div><h2>Récits &amp; clusters de faits</h2></div>
+    <p class="small">Chaque récit est restructuré en contexte, fait générateur et conséquence. Les jugements sont isolés et n'entrent pas dans les calculs. Les clusters sont formés sans catégories prédéfinies.</p>
+  </div>
+  <section class="panel" style="margin-bottom:16px">
+    <div class="panel-head"><h3>Clusters</h3><span class="small muted">Cliquez sur un cluster pour filtrer le flux</span></div>
+    <div class="scroll-x"><table class="t"><thead><tr><th>Cluster</th><th>Type</th><th>Axe</th><th>28 j</th><th>Vélocité</th><th>Cohortes</th><th>12 semaines</th><th>Statut</th></tr></thead><tbody>
+      ${stats.filter(c => c.n > 0).sort((a, b) => b.vel - a.vel).map(c => `<tr>
+        <td><button class="btn small" data-act="fcl" data-cl="${c.id}" style="border:0;padding:0;background:none;text-align:left;font-weight:600">${esc(c.label)}</button></td>
+        <td>${typePill(c.type)}</td><td class="small">${c.axe ? esc(AX[c.axe].nom) : "—"}</td>
+        <td class="num">${c.c2}</td><td class="num ${c.vel > 0.3 ? "up" : c.vel < -0.3 ? "down" : ""}">${pct(c.vel)}</td><td class="num">${c.cohorts}</td>
+        <td>${spark(c.weeks, 96, 24, TYPES[c.type].color)}</td>
+        <td>${c.weak ? `<span class="pill sf">Signal faible</span> ` : ""}${c.confirmed ? `<span class="pill ok">Confirmé</span>` : `<span class="pill neutral">En observation</span>`}</td></tr>`).join("")}
+    </tbody></table></div>
+  </section>
+  <section class="recits-layout">
+    <aside class="filters">
+      <label for="f-q">Recherche dans les faits<input type="search" id="f-q" value="${esc(f.q)}" placeholder="ex. Excel, retard, PFAS"></label>
+      <label for="f-cl">Cluster<select id="f-cl"><option value="">Tous</option>${stats.filter(c => c.n > 0).map(c => `<option value="${c.id}"${c.id === f.cluster ? " selected" : ""}>${esc(c.court)}</option>`).join("")}</select></label>
+      <label for="f-ty">Type de fait<select id="f-ty"><option value="">Tous</option>${Object.entries(TYPES).map(([k, t]) => `<option value="${k}"${k === f.type ? " selected" : ""}>${t.label}</option>`).join("")}</select></label>
+      <span class="small muted"><b class="num">${list.length}</b> récits</span>
+      <button class="btn small" data-act="freset">Effacer les filtres</button>
+    </aside>
+    <div class="list">${list.slice(0, state.shown).map(recitCard).join("") || `<p class="muted">Aucun récit ne correspond à ces filtres.</p>`}
+      ${list.length > state.shown ? `<button class="btn" data-act="more">Afficher 25 récits de plus</button>` : ""}</div>
+  </section>`;
+}
+
+/* ---------- Moteur de nettoyage (simulation à base de règles) ---------- */
+const JUGEMENTS = ["catastroph", "nul", "nulle", "nuls", "incompétent", "incompétente", "incompétents", "scandal", "horrible", "inadmissible", "lamentable", "génial", "géniale", "super", "ridicule", "stupide", "absurde", "honteu", "inacceptable", "débile", "minable", "pathétique", "n'importe quoi", "usine à gaz", "amateurisme", "fainéant", "idiot", "insupportable", "déplorable", "aberrant", "incroyable", "nulle part ailleurs", "comme d'habitude", "pas fiable", "irréaliste", "personne ne nous écoute", "inconscient", "j'en ai marre", "c'est toujours pareil", "lamentablement", "n'importe comment", "mauvais", "excellent", "parfait", "désastre", "honte", "pitoyable"];
+const ACTIONS_LX = ["contourn", "utilis", "saisi", "ressais", "recopi", "export", "import", "bloqu", "refus", "échou", "attend", "relanc", "livr", "command", "appel", "arrêt", "retir", "fractionn", "modifi", "envoy", "reçu", "déclar", "valid", "créé", "ferm", "répar", "perd", "annul", "passé", "install", "fix", "vend", "achet", "test", "remplac", "imprim", "calcul", "signal", "constat", "mesur", "publi"];
+const PRENOMS = ["Jean", "Marie", "Pierre", "Sophie", "Nicolas", "Julie", "Thomas", "Isabelle", "Laurent", "Nathalie", "Philippe", "Céline", "Paul", "Claire", "Michel", "Sandrine", "Karim", "Fatima", "David", "Sarah", "Kevin", "Léa", "Lucas", "Emma", "Hugo", "Camille", "Antoine", "Julien", "Christophe", "Valérie", "Éric", "Eric", "Stéphane", "Mohamed", "Olivier", "Patrick", "François", "Martine", "Catherine", "Alain", "Bernard", "Sylvie", "Benoît", "Aurélie", "Mehdi", "Inès", "Yann", "Manon"];
+const ROLES_RX = /\b(nous|l'équipe|mon équipe|le client|les clients|le fournisseur|le transporteur|l'acheteur|les acheteurs|le technicien|les techniciens|le chef d'équipe|l'opérateur|le commercial|le régulateur|l'autorité|l'ONG|le sous-traitant|le service client|la comptabilité|le magasinier|le revendeur|mon manager|mon responsable|la direction)\b/gi;
+const PERSON_REF = /\[PERSONNE\]|\b(mon chef|ma cheffe|mon manager|mon responsable|ma responsable|mon collègue|ma collègue|le directeur|la directrice)\b/i;
+
+function maskNER(text) {
+  const marks = [];
+  let t = text;
+  const rep = (rx, tag) => { t = t.replace(rx, m => { marks.push([m, tag]); return tag; }); };
+  rep(/[\w.+-]+@[\w-]+\.[\w.-]+/g, "[EMAIL]");
+  rep(/(?:\+33\s?|\b0)[1-9](?:[\s.-]?\d{2}){4}\b/g, "[TÉLÉPHONE]");
+  rep(/\b(?:M\.|Mme|Mlle|Mr|Monsieur|Madame)\s+[A-ZÉÈÀ][\wéèêëàâîïôöûüç'-]+(?:\s+[A-ZÉÈÀ][\wéèêëàâîïôöûüç'-]+)?/g, "[PERSONNE]");
+  rep(new RegExp("\\b(?:" + PRENOMS.join("|") + ")(?:\\s+[A-ZÉÈÀ][A-Za-zéèêëàâîïôöûüç'-]+)?\\b", "g"), "[PERSONNE]");
+  return { text: t, marks };
+}
+function findJudgments(s) {
+  const low = s.toLowerCase(), hits = [];
+  for (const j of JUGEMENTS) {
+    const rx = new RegExp("(^|[^\\p{L}])(" + j.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\p{L}*)", "giu");
+    let m; while ((m = rx.exec(low))) hits.push(s.substr(m.index + m[1].length, m[2].length));
+  }
+  return [...new Set(hits)];
+}
+const hasFactMarker = s => /\d/.test(s) || ACTIONS_LX.some(a => s.toLowerCase().includes(a));
+
+function analyse(raw, meta) {
+  const ner = maskNER(raw);
+  const sentences = ner.text.split(/(?<=[.!?])\s+|\n+/).map(s => s.trim()).filter(Boolean);
+  const isolated = [], kept = [], contacts = [];
+  for (const s of sentences) {
+    const clauses = s.split(/(?<=[,;:])\s+/);
+    const keptCl = [];
+    for (const cl of clauses) {
+      if (/\[(EMAIL|TÉLÉPHONE)\]/.test(cl)) { contacts.push(cl.replace(/[,;:.!?]+$/, "")); continue; }
+      const j = findJudgments(cl);
+      if (!j.length && /\[PERSONNE\]/.test(cl) && !/\d/.test(cl)) { isolated.push(cl.replace(/[,;:.!?]+$/, "")); continue; }
+      if (!j.length) { keptCl.push(cl); continue; }
+      if (hasFactMarker(cl)) {
+        let c2 = cl;
+        for (const w of j) { c2 = c2.replace(new RegExp("(vraiment |totalement |complètement |très |trop |franchement )?" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), ""); isolated.push(w); }
+        c2 = c2.replace(/\s{2,}/g, " ").replace(/\s+([,.;:])/g, "$1").trim();
+        if (c2.replace(/[^\p{L}\d]/gu, "").length > 8) keptCl.push(c2);
+      } else { isolated.push(cl.replace(/[,;:.!?]+$/, "")); }
+    }
+    if (keptCl.length) kept.push(keptCl.join(" ").replace(/[,;:]\s*$/, "."));
+  }
+  const clean = kept.join(" ");
+  const low = clean.toLowerCase();
+  const quand = [...new Set((clean.match(/(?<![\p{L}\d])(hier|avant-hier|ce matin|cet après-midi|ce soir|aujourd'hui|la semaine dernière|le mois dernier|ce mois-ci|cette semaine|lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|\d{1,2}\/\d{1,2}(?:\/\d{2,4})?|\d{1,2} (?:janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre))(?![\p{L}])/giu) || []))];
+  const ou = [...new Set((clean.match(/(?<![\p{L}])(?:à l'|à la |au |sur le |sur la |dans l'|dans le |dans la )?(?:étape \d+|atelier \w+|entrepôt(?: \w+)?|site de \w+|quai \d+|ligne \d+|service \w+|portail \w+|ERP|CRM|agence \w+|magasin \w+|usine(?: de \w+)?)(?![\p{L}])/giu) || []).map(s => s.trim()))];
+  const qui = [...new Set((clean.match(ROLES_RX) || []).map(s => s.toLowerCase()).concat(clean.includes("[PERSONNE]") ? ["[personne masquée]"] : []))];
+  const impactRx = /\d+(?:[,.]\d+)?\s?(?:h\b|heures?|min(?:utes)?|jours?|semaines?|mois|€|k€|%|t\b|tonnes?|pièces|commandes|clients|erreurs?|unités|bons)/gi;
+  const impacts = clean.match(impactRx) || [];
+  const quoi = kept.find(s => ACTIONS_LX.some(a => s.toLowerCase().includes(a))) || kept[0] || "";
+  const factCount = impacts.length + quand.length + ou.length + ACTIONS_LX.filter(a => low.includes(a)).length;
+  const fact = clean ? clamp(factCount / (factCount + 1.5 * isolated.length + 1), 0.05, 0.98) : 0;
+  const sc = { cont: 0, rup: 0, dys: 0.5 };
+  ["contourn", "du coup", "on utilise", "nous utilisons", "excel", "tableur", "à la main", "manuellement", "en parallèle", "astuce", "nous avons dû", "on a dû", "détourn", "au lieu de", "fractionn", "ressais", "recopi"].forEach(k => { if (low.includes(k)) sc.cont += 1; });
+  ["régulateur", "norme", "sanction", "mise en demeure", "décret", "loi ", "ong", "jurisprudence", "restriction", "autorité", "réglementation", "consultation publique"].forEach(k => { if (low.includes(k)) sc.rup += 1.2; });
+  ["bloqu", "impossible", "erreur", "panne", "retard", "échou", "refus", "404", "ne fonctionne", "ne répond", "arrêt"].forEach(k => { if (low.includes(k)) sc.dys += 1; });
+  const type = Object.entries(sc).sort((a, b) => b[1] - a[1])[0][0];
+  let best = { id: "nc", s: 0 };
+  for (const c of CLUSTERS) { const s = c.kw.filter(k => low.includes(k)).length; if (s > best.s) best = { id: c.id, s }; }
+  const cluster = best.s >= 2 ? best.id : "nc";
+  let grav = 2 + (impacts.length ? 1 : 0) + (impacts.length > 1 ? 1 : 0);
+  if (/sécurité|accident|blessé|incendie|tension|chute|consignation/i.test(low)) grav = 5;
+  grav = clamp(grav, 1, 5);
+  const adHominem = (PERSON_REF.test(ner.text) && isolated.length > 0 && factCount < 3) || (!clean && isolated.length > 0);
+  const tooShort = clean.replace(/[^\p{L}]/gu, "").length < 25;
+  let decision = "accept", motif = "";
+  if (adHominem) { decision = "reject"; motif = "Attaque personnelle sans fait vérifiable : le récit est orienté vers le canal de médiation, hors tableau de bord."; }
+  else if (tooShort || fact < 0.3) { decision = "reject"; motif = "Récit trop pauvre en faits (étapes, outils, chiffres, conséquences). L'émetteur est invité à compléter son récit."; }
+  const ctx = kept.length > 2 ? kept[0] : "";
+  const rest = kept.filter(s => s !== ctx);
+  const fait = rest.find(s => ACTIONS_LX.some(a => s.toLowerCase().includes(a))) || rest[0] || "";
+  const after = rest.filter(s => s !== fait);
+  const csq = after.filter(s => /retard|arrêt|perte|perdu|rupture|erreur|annul|surcoût|reporté|impossible/i.test(s) || (s.match(impactRx) || []).length).join(" ") || after.join(" ");
+  return { raw, ner, isolated, contacts, clean, quand, ou, qui, impacts, quoi, type, cluster, grav, fact, decision, motif, ctx: ctx || meta.proc + ".", fait, csq, sc };
+}
+
+const EXEMPLE = "Mardi dernier, à l'étape 3 de la préparation des commandes, l'ERP a encore refusé les commandes multi-sites. C'est vraiment une catastrophe, M. Durand le sait très bien et ne fait rien. Du coup nous avons saisi 26 commandes dans un fichier Excel partagé puis on les a ressaisies le lendemain dans l'ERP. Cela a pris 3 heures à deux personnes et 4 commandes sont parties avec un jour de retard. Vous pouvez me joindre au 06 12 34 56 78.";
+const PROCESSUS = ["Administration des ventes", "Achats", "Approvisionnement", "Production", "Maintenance", "Comptabilité", "Parcours client en ligne", "Usage produit", "Service après-vente", "Veille réglementaire", "Autre"];
+
+function viewCollecte() {
+  const d = state.draft || (state.draft = { q: "Q2", pp: "Collaborateurs", canal: CANAUX.Collaborateurs[0], proc: "Administration des ventes", text: EXEMPLE, res: null });
+  const res = d.res;
+  const hlRaw = () => {
+    let h = esc(res.ner.text);
+    h = h.replace(/\[(EMAIL|TÉLÉPHONE|PERSONNE)\]/g, m => `<span class="hl ner">${m}</span>`);
+    for (const j of res.isolated.filter(j => j.length < 60)) h = h.replace(esc(j), `<span class="hl jug">${esc(j)}</span>`);
+    return h;
+  };
+  const meterColor = res ? (res.fact >= 0.6 ? "var(--ok)" : res.fact >= 0.3 ? "var(--warn)" : "var(--crit)") : "";
+  return `
+  <div class="page-head">
+    <div><div class="eyebrow">Questionnement narratif ouvert</div><h2>Collecte et nettoyage d'un récit</h2></div>
+    <p class="small">Aucune échelle de satisfaction : la personne raconte un fait vécu. Le moteur anonymise, isole les jugements et structure le récit avant tout affichage.</p>
+  </div>
+  <section class="collect">
+    <article class="panel">
+      <div class="eyebrow">1 · Choix de l'invitation narrative</div>
+      <div class="qcards">${QUESTIONS.map(q => `<button class="qcard" data-act="q" data-q="${q.id}" aria-pressed="${d.q === q.id}"><b>${q.id} · ${q.titre}</b>${q.texte}</button>`).join("")}</div>
+      <div class="formrow">
+        <label for="c-pp">Partie prenante<select id="c-pp">${PP.map(p => `<option${p === d.pp ? " selected" : ""}>${p}</option>`).join("")}</select></label>
+        <label for="c-canal">Canal<select id="c-canal">${CANAUX[d.pp].map(c => `<option${c === d.canal ? " selected" : ""}>${esc(c)}</option>`).join("")}</select></label>
+        <label for="c-proc">Processus concerné<select id="c-proc">${PROCESSUS.map(p => `<option${p === d.proc ? " selected" : ""}>${p}</option>`).join("")}</select></label>
+      </div>
+      <label for="c-text" class="eyebrow">2 · Récit libre</label>
+      <textarea id="c-text" rows="9">${esc(d.text)}</textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" data-act="analyse">Analyser le récit</button>
+        <button class="btn" data-act="exemple">Recharger l'exemple</button>
+        <button class="btn" data-act="exemple2">Exemple à rejeter</button>
+      </div>
+      <p class="demo-note">L'exemple pré-rempli est fictif. Il contient volontairement un nom, un numéro de téléphone et des jugements pour montrer le traitement.</p>
+    </article>
+
+    <article class="panel">
+      <div class="eyebrow">Chaîne de traitement</div>
+      ${!res ? `<p class="muted">Lancez l'analyse pour voir les étapes de traitement.</p>` : `
+      <div class="steps">
+        <div class="step"><span class="n">1</span><div><b>Anonymisation asymétrique</b><p class="small muted">Identité chiffrée à la réception. La gouvernance ne voit que la cohorte <span class="mono">${PP_CODE[d.pp]}-${d.cohorte}</span>.</p></div></div>
+        <div class="step"><span class="n">2</span><div><b>Masquage RGPD (NER)</b> <span class="small muted">${res.ner.marks.length} entité(s) masquée(s)${res.contacts.length ? ", " + res.contacts.length + " phrase(s) de coordonnées retirée(s)" : ""}</span><div class="textview" style="margin-top:6px">${hlRaw()}</div></div></div>
+        <div class="step"><span class="n">3</span><div><b>Isolation des jugements et mises en cause</b> <span class="small muted">${res.isolated.length} élément(s) isolé(s)</span>
+          <p class="small">${res.isolated.map(j => `<span class="hl jug">${esc(j)}</span>`).join(" ") || `<span class="muted">Aucun jugement détecté.</span>`}</p></div></div>
+        <div class="step"><span class="n">4</span><div><b>Extraction Qui / Quoi / Où / Quand / Impact</b>
+          <dl class="struct" style="margin-top:6px">
+            <dt>Qui</dt><dd>${esc(res.qui.join(", ")) || "—"}</dd>
+            <dt>Quoi</dt><dd>${esc(res.quoi) || "—"}</dd>
+            <dt>Où</dt><dd>${esc(res.ou.join(", ")) || "—"}</dd>
+            <dt>Quand</dt><dd>${esc(res.quand.join(", ")) || "—"}</dd>
+            <dt>Impact</dt><dd>${esc(res.impacts.join(", ")) || "—"}</dd>
+          </dl></div></div>
+        <div class="step"><span class="n">5</span><div><b>Qualification</b>
+          <p class="small" style="margin-top:4px">${typePill(res.type)} · cluster <b>${esc(CL[res.cluster].label)}</b> · gravité <b class="num">${res.grav}/5</b></p>
+          <div class="small muted" style="margin-top:6px">Indice de factualité <b class="num">${Math.round(res.fact * 100)} %</b></div>
+          <div class="meter"><i style="width:${Math.round(res.fact * 100)}%;background:${meterColor}"></i></div></div></div>
+      </div>
+      <div class="decision ${res.decision === "accept" ? "ok" : "crit"}">
+        <div><b>${res.decision === "accept" ? "Récit recevable" : "Récit écarté du tableau de bord"}</b><p class="small">${res.decision === "accept" ? "Version nettoyée : " + esc(res.clean) : esc(res.motif)}</p></div>
+        ${res.decision === "accept" ? `<button class="btn primary" data-act="verser">Verser au tableau de bord</button>` : ""}
+      </div>`}
+    </article>
+  </section>`;
+}
+
+function viewDispositif() {
+  const p = state.plan || (state.plan = { col: 1200, cli: 400, fou: 150, taux: 12, rep: 30 });
+  const pop = p.col + p.cli + p.fou, mois = Math.round(pop * p.taux / 100), recitsAn = Math.round(mois * 12 * p.rep / 100);
+  const couverture = Math.ceil(100 / p.taux);
+  const pack = recitsAn <= 5000 ? "Essential (jusqu'à 5 000 récits/an)" : "Strategic (volume étendu)";
+  const recs = allRecits().filter(r => ageOf(r) < 28);
+  const csv = toCSV(recs.slice(0, 4));
+  return `
+  <div class="page-head">
+    <div><div class="eyebrow">Administration du dispositif</div><h2>Plan de collecte, garde-fous et intégration BI</h2></div>
+    <p class="small">Paramétrage d'une ETI type. La collecte alterne un flux continu et des cohortes tournantes, sans solliciter une même personne plus d'une fois par an.</p>
+  </div>
+  <section class="grid2">
+    <article class="panel">
+      <h3>Planificateur de cohortes tournantes</h3>
+      <div class="formrow">
+        <label for="p-col">Collaborateurs<input type="number" id="p-col" min="0" value="${p.col}" data-plan="col"></label>
+        <label for="p-cli">Clients stratégiques<input type="number" id="p-cli" min="0" value="${p.cli}" data-plan="cli"></label>
+        <label for="p-fou">Fournisseurs clés<input type="number" id="p-fou" min="0" value="${p.fou}" data-plan="fou"></label>
+      </div>
+      <div class="formrow">
+        <label for="p-taux">Taux de cohorte mensuel : <b class="num">${p.taux} %</b><input type="range" id="p-taux" min="5" max="15" value="${p.taux}" data-plan="taux"></label>
+        <label for="p-rep">Taux de réponse estimé : <b class="num">${p.rep} %</b><input type="range" id="p-rep" min="10" max="60" value="${p.rep}" data-plan="rep"></label>
+      </div>
+      <div class="strip" style="grid-template-columns:repeat(3,minmax(0,1fr));margin:0">
+        <div class="tile"><span class="eyebrow">Sollicitations / mois</span><span class="big">${mois.toLocaleString("fr-FR")}</span></div>
+        <div class="tile"><span class="eyebrow">Récits / an estimés</span><span class="big">${recitsAn.toLocaleString("fr-FR")}</span></div>
+        <div class="tile"><span class="eyebrow">Couverture totale</span><span class="big">${couverture} mois</span></div>
+      </div>
+      <p class="small muted">Volume compatible avec l'offre <b>${pack}</b>. ${couverture < 12 ? `Après ${couverture} mois, la rotation reprend sur les personnes non sollicitées depuis 12 mois.` : ""}</p>
+    </article>
+
+    <article class="panel">
+      <h3>Canaux de capture par partie prenante</h3>
+      <div class="scroll-x"><table class="t"><thead><tr><th>Partie prenante</th><th>Collecte continue</th><th>Collecte séquentielle</th></tr></thead><tbody>
+        <tr><td><b>Collaborateurs</b></td><td class="small">Bouton « Irritant terrain » dans l'ERP, QR codes en atelier</td><td class="small">Cohorte mensuelle par email (${p.taux} %)</td></tr>
+        <tr><td><b>Clients</b></td><td class="small">Formulaire déclenché après un échec de parcours, communauté bêta</td><td class="small">SMS court non directif</td></tr>
+        <tr><td><b>Fournisseurs</b></td><td class="small">Portail de déclaration d'incidents, API</td><td class="small">Revue trimestrielle</td></tr>
+        <tr><td><b>Régulateurs &amp; ONG</b></td><td class="small">Veille RSS juridique, rapports d'ONG (mots-clés « sanction », « norme »)</td><td class="small">—</td></tr>
+      </tbody></table></div>
+    </article>
+
+    <article class="panel">
+      <h3>Garde-fous éthiques et RGPD</h3>
+      ${[["Anonymisation asymétrique", "L'identité est chiffrée à la réception. Analystes et gouvernance ne voient qu'un identifiant de cohorte."],
+         ["Masquage automatique (NER)", "Noms, prénoms, emails et téléphones sont expurgés avant tout traitement."],
+         ["Immunité à la dénonciation", "Une attaque personnelle sans fait associé est rejetée et orientée vers la médiation, hors tableau de bord."],
+         ["Double enregistrement", "Un signal ne remonte au Comex qu'après confirmation sur deux périodes et par au moins 3 cohortes."],
+         ["Hébergement souverain", "Cloud européen, chiffrement de bout en bout, anonymisation irréversible en production."]
+        ].map(([t, d]) => `<div class="guard"><span class="pill ok">Actif</span><div><b>${t}</b><p class="small muted">${d}</p></div></div>`).join("")}
+    </article>
+
+    <article class="panel">
+      <h3>Export vers Power BI / Tableau</h3>
+      <p class="small muted">Le moteur pousse les faits nettoyés et scorés vers la BI existante de l'entreprise. Aperçu du jeu de données (${recs.length} récits sur 28 jours) :</p>
+      <pre class="code" id="csv-preview">${esc(csv)}</pre>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" data-act="copycsv">Copier le CSV complet</button>
+        <button class="btn" data-act="copyjson">Copier le JSON (clusters + SDS)</button>
+      </div>
+      <pre class="code">GET /api/v1/signals?since=28d        → récits nettoyés
+GET /api/v1/clusters                 → clusters, vélocité, statut
+GET /api/v1/strategy/divergence      → SDS par axe stratégique</pre>
+    </article>
+  </section>
+  <section style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+    <p class="small muted">Les récits saisis, les actions et les valeurs de KPI modifiées sont conservés dans ce navigateur uniquement.</p>
+    <button class="btn" data-act="reset">Réinitialiser la démonstration</button>
+  </section>`;
+}
+function toCSV(rows) {
+  const head = ["id", "date", "partie_prenante", "cohorte", "canal", "type", "cluster", "axe", "processus", "gravite", "factualite", "contexte", "fait", "consequence"];
+  const q = v => `"${String(v).replace(/"/g, '""')}"`;
+  return [head.join(";")].concat(rows.map(r => [r.id, new Date(r.ts).toISOString().slice(0, 10), r.pp, r.cohorte, r.canal, r.type, r.cluster, CL[r.cluster]?.axe || "", r.proc, r.grav, r.fact.toFixed(2), r.ctx, r.fait, r.csq].map(q).join(";"))).join("\n");
+}
+
+/* ============================================================
+   ROUTAGE & ÉVÉNEMENTS
+   ============================================================ */
+const VIEWS = { pilotage: viewPilotage, boucle: viewBoucle, recits: viewRecits, collecte: viewCollecte, dispositif: viewDispositif };
+function current() { const h = location.hash.slice(1); return VIEWS[h] ? h : "pilotage"; }
+function render() {
+  const v = current();
+  document.getElementById("view").innerHTML = VIEWS[v]();
+  document.querySelectorAll("nav.tabs a").forEach(a => { if (a.getAttribute("href") === "#" + v) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+}
+function go(view) { if (location.hash !== "#" + view) location.hash = view; else render(); window.scrollTo(0, 0); }
+window.addEventListener("hashchange", () => { render(); window.scrollTo(0, 0); });
+
+const scopeSel = document.getElementById("scope");
+PP.forEach(p => scopeSel.insertAdjacentHTML("beforeend", `<option${p === state.scope ? " selected" : ""}>${p}</option>`));
+scopeSel.addEventListener("change", () => { state.scope = scopeSel.value; store.set("scope", state.scope); render(); });
+
+async function copy(text, label) {
+  try { await navigator.clipboard.writeText(text); toast(label + " copié dans le presse-papiers"); }
+  catch { const pre = document.getElementById("csv-preview"); pre.textContent = text; const rg = document.createRange(); rg.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(rg); toast("Copie bloquée : le texte est sélectionné, utilisez Ctrl+C"); }
+}
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b || b.tagName === "SELECT" || b.tagName === "INPUT") return;
+  const act = b.dataset.act;
+  if (act === "open") {
+    const c = CL[b.dataset.cl], n = 101 + state.actions.length;
+    state.actions.push({ id: "A-" + n, cluster: c.id, titre: (b.textContent.includes("veille") ? "Veille renforcée : " : "Investigation : ") + c.label, resp: c.axe ? "Sponsor « " + AX[c.axe].nom + " »" : "Comité de pilotage", statut: b.textContent.includes("veille") ? "À instruire" : "Investigation", ts: NOW + 21 * DAY });
+    store.set("actions", state.actions); toast("Action A-" + n + " ajoutée au registre"); render();
+  }
+  if (act === "fcl") { state.filters.cluster = b.dataset.cl; state.shown = 25; render(); document.querySelector(".recits-layout")?.scrollIntoView({ behavior: "smooth" }); }
+  if (act === "freset") { state.filters = { cluster: "", type: "", q: "", pp: "" }; render(); }
+  if (act === "more") { state.shown += 25; render(); }
+  if (act === "q") { state.draft.q = b.dataset.q; render(); }
+  if (act === "exemple") { state.draft.text = EXEMPLE; state.draft.res = null; render(); }
+  if (act === "exemple2") { state.draft.text = "Ma responsable Sophie Martin est complètement incompétente, c'est toujours pareil avec elle, c'est n'importe quoi et personne ne nous écoute."; state.draft.res = null; render(); }
+  if (act === "analyse") {
+    const d = state.draft; d.text = document.getElementById("c-text").value; d.cohorte = 100 + Math.floor(Math.random() * 60);
+    d.res = analyse(d.text, d); render();
+  }
+  if (act === "verser") {
+    const d = state.draft, r = d.res;
+    const rec = { id: "R-" + String(9000 + state.user.length + 1), ts: Date.now(), pp: d.pp, canal: d.canal, cohorte: PP_CODE[d.pp] + "-" + d.cohorte, question: d.q, cluster: r.cluster, type: r.type, proc: d.proc, grav: r.grav, ctx: r.ctx, fait: r.fait, csq: r.csq, jug: r.isolated, fact: r.fact, demo: false };
+    state.user.push(rec); store.set("recits", state.user);
+    state.draft.res = null; toast(rec.id + " versé dans le flux · cluster « " + CL[r.cluster].court + " »");
+    state.filters = { cluster: "", type: "", q: "", pp: "" }; go("recits");
+  }
+  if (act === "copycsv") copy(toCSV(allRecits()), "CSV");
+  if (act === "copyjson") {
+    const stats = clusterStats(allRecits());
+    copy(JSON.stringify({ genere_le: new Date().toISOString(), axes: AXES.map(a => { const r = axisSDS(a, stats); return { id: a.id, nom: a.nom, sds: +r.sds.toFixed(2), atteinte_kpi: +r.h.toFixed(2), pression_terrain: +r.p.toFixed(2) }; }), clusters: stats.map(c => ({ id: c.id, label: c.label, type: c.type, axe: c.axe, recits_28j: c.c2, recits_28j_prec: c.c1, velocite: +c.vel.toFixed(2), gravite: +c.g2.toFixed(2), cohortes: c.cohorts, signal_faible: c.weak, confirme: c.confirmed })) }, null, 2), "JSON");
+  }
+  if (act === "reset") {
+    if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.textContent = "Confirmer la réinitialisation"; b.classList.add("primary"); return; }
+    ["recits", "actions", "kpis", "scope"].forEach(k => { try { localStorage.removeItem("ias." + k); } catch { } });
+    location.hash = "pilotage"; location.reload();
+  }
+});
+
+document.addEventListener("input", e => {
+  const t = e.target;
+  if (t.dataset.act === "kpi") {
+    const k = AX[t.dataset.ax].kpis.find(k => k.id === t.dataset.k);
+    k.valeur = +t.value; state.kpis[k.id] = k.valeur; store.set("kpis", state.kpis);
+    clearTimeout(render._t); render._t = setTimeout(() => { const y = scrollY; render(); scrollTo(0, y); document.getElementById(t.id)?.focus(); }, 60);
+  }
+  if (t.dataset.plan) { state.plan[t.dataset.plan] = +t.value || 0; if (t.type === "range") { const y = scrollY; render(); scrollTo(0, y); document.getElementById(t.id)?.focus(); } }
+  if (t.id === "c-text") state.draft.text = t.value;
+  if (t.id === "f-q") { state.filters.q = t.value; clearTimeout(render._q); render._q = setTimeout(() => { render(); const el = document.getElementById("f-q"); el.focus(); el.setSelectionRange(el.value.length, el.value.length); }, 250); }
+});
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.dataset.act === "status") { const a = state.actions.find(a => a.id === t.dataset.id); a.statut = t.value; store.set("actions", state.actions); toast(a.id + " : " + a.statut); render(); }
+  if (t.dataset.plan && t.type === "number") render();
+  if (t.id === "c-pp") { state.draft.pp = t.value; state.draft.canal = CANAUX[t.value][0]; render(); }
+  if (t.id === "c-canal") state.draft.canal = t.value;
+  if (t.id === "c-proc") state.draft.proc = t.value;
+  if (t.id === "f-cl") { state.filters.cluster = t.value; state.shown = 25; render(); }
+  if (t.id === "f-ty") { state.filters.type = t.value; state.shown = 25; render(); }
+});
+
+render();
+</script>
+</body>
+</html>
